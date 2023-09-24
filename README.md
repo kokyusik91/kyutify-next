@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Spotify clone with Next.js 13.5.2 🏚
 
-## Getting Started
+## 실행방법
 
-First, run the development server:
+```shell
+npm install
 
-```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 만드는 과정
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Layout 잡기
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+기존의 airbnb와는 다르게, app 디렉토리 하위에 바로 page.tsx를 위치 시킨게 아닌, `(site)`라는 디렉토리 하위에 page.tsx를 위치 시켰다.
 
-## Learn More
+전체적인 Layout은 Layout.tsx에 작성을 하였다.
 
-To learn more about Next.js, take a look at the following resources:
+```tsx
+// app/layout.tsx
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+import './globals.css';
+import type { Metadata } from 'next';
+import { Figtree } from 'next/font/google';
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+import SideBar from '@/components/SideBar';
 
-## Deploy on Vercel
+const font = Figtree({ subsets: ['latin'] });
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+export const metadata: Metadata = {
+  title: 'Spotify Clone',
+  description: 'Listen to music!',
+};
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang='en'>
+      <body className={font.className}>
+        <SideBar>{children}</SideBar>
+      </body>
+    </html>
+  );
+}
+```
+
+SideBar.tsx에 전체적인 레이아웃이 잡혀있다. 추가로 tailwind-merge를 사용해서 기본적인 스타일 속성을 미리 선언해두고, 추가로 필요한 CSS 속성은 props의 `className`로 넘겨 기존 스타일을 확장시키거나, 오버라이딩을 할 수 있다.
+
+```tsx
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, children, disabled, type = 'button', ...props }, ref) => {
+    return (
+      <button
+        type={type}
+        className={twMerge(
+          `
+        w-full
+        rounded-full
+        bg-green-500
+        border
+        border-transparent
+        px-3
+        py-3
+        disabled:cursor-not-allowed
+        disabled:opacity-50
+        text-black
+        font-bold
+        hover:opacity-75
+        transition
+      `,
+          className
+        )}
+        disabled={disabled}
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
+);
+Button.displayName = 'Button';
+
+export default Button;
+```
+
+보는 것처럼 `twMerge()`함수 내부에 미리 지정해 놓을 CSS속성을 입력해 놓는다.
