@@ -1,7 +1,14 @@
+import getSongs from '@/actions/getSongs';
 import Header from '@/components/Header';
 import ListItem from '@/components/ListItem';
+import PageContent from './components/PageContent';
 
-export default function Home() {
+export const revalidate = 0;
+
+export default async function Home() {
+  // action을 실행시킨다. songs테이블에 저장되있는 song이 배열로 내려온다.
+  const songs = await getSongs();
+
   return (
     <div className='bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto'>
       <Header>
@@ -20,7 +27,8 @@ export default function Home() {
         <div className='flex justify-between items-center'>
           <h1 className='text-white text-2xl font-semibold'>Newest Songs</h1>
         </div>
-        List of Songs!
+
+        <PageContent songs={songs} />
       </div>
     </div>
   );
