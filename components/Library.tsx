@@ -1,8 +1,21 @@
 import { TbPlaylist } from 'react-icons/tb';
 import { AiOutlinePlus } from 'react-icons/ai';
+import useAuthModal from '@/hooks/useAuthModal';
+import { useUser } from '@/hooks/useUser';
+import useUploadModal from '@/hooks/useUploadModal';
 
 function Library() {
-  const onClick = () => {};
+  const authModal = useAuthModal();
+  const uploadModal = useUploadModal();
+  const { user } = useUser();
+  const onClick = () => {
+    // 로그인이 안되어있으면 auth Modal을 띄워준다.
+    if (!user) {
+      return authModal.onOpen();
+    }
+
+    return uploadModal.onOpen();
+  };
   // Handle upload later
   return (
     <div className='flex flex-col'>
